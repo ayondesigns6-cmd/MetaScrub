@@ -20,7 +20,6 @@ export function App() {
   const [results, setResults] = useState<CleanedImageResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [autoDownload, setAutoDownload] = useState(true);
   const [outputFormat, setOutputFormat] = useState<'auto' | 'image/jpeg' | 'image/png' | 'image/webp'>('auto');
   const [quality, setQuality] = useState<number>(0.95);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -48,11 +47,6 @@ export function App() {
             quality,
           });
           newResults.unshift(res);
-
-          // Trigger auto-download if enabled
-          if (autoDownload) {
-            saveAs(res.cleanedBlob, res.cleanedFileName);
-          }
         } catch (err) {
           console.error(`Error processing ${file.name}:`, err);
         }
@@ -61,7 +55,7 @@ export function App() {
       setResults((prev) => [...newResults, ...prev]);
       setIsProcessing(false);
     },
-    [outputFormat, quality, autoDownload]
+    [outputFormat, quality]
   );
 
   const onDragOver = (e: React.DragEvent) => {
@@ -192,23 +186,13 @@ export function App() {
           {/* Controls Bar */}
           <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/60 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={autoDownload}
-                  onChange={(e) => setAutoDownload(e.target.checked)}
-                  className="rounded border-slate-300 text-slate-900 focus:ring-0 focus:ring-offset-0 h-4 w-4"
-                />
-                <span className="font-medium text-slate-700">Auto-download scrubbed image</span>
-              </label>
-
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="inline-flex items-center space-x-1 text-slate-500 hover:text-slate-900 transition-colors font-medium cursor-pointer"
+                className="inline-flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1 rounded transition-colors font-medium cursor-pointer"
               >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Format & Quality</span>
+                <Sliders className="w-3.5 h-3.5 text-slate-500" />
+                <span>Format & Quality Options</span>
                 <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
               </button>
             </div>
